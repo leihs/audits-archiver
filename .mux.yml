@@ -1,0 +1,14 @@
+name: LEIHS/v5/rchive-audits
+windows:
+  2:
+    name: app
+    command: |
+      lein do clean, repl
+  3: 
+    name: deploy
+    command: | 
+      # ansible-playbook -v deploy/deploy_play.yml -i ../zhdk-inventory/prod-hosts-v5 -e 'prtg_url={{prod_v5_sync_prtg_url}}' -e 'leihs_api_token={{prod_v5_api_sync_token}}' --ssh-common-args '-o ProxyCommand="ssh -W %h:%p -q root@ci.zhdk.ch"'
+  8:
+    name: log
+    command: |
+      mkdir -p log && echo " " > log/debug.log && tail -f log/debug.log
