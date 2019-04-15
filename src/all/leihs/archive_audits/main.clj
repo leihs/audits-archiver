@@ -1,8 +1,8 @@
 (ns leihs.archive-audits.main
   (:refer-clojure :exclude [str keyword])
   (:require
+    [leihs.archive-audits.time :as time]
     [leihs.utils.core :refer [presence str keyword]]
-    [java-time]
 
     [clojure.tools.cli :as cli :refer [parse-opts]]
     [clojure.pprint :refer [pprint]]
@@ -17,7 +17,8 @@
 
 (def defaults
   {:LEIHS_HTTP_URL "http://localhost:3200"
-   :START_DATE "2015-01-01"
+   :START_DATE time/default-start-date
+   :END_DATE time/default-end-date
    :PRTG_URL nil})
 
 (defn env-or-default [kw & {:keys [parse-fn]
@@ -28,19 +29,20 @@
 (def cli-options
   [["-d" "--dry-run" "Do download but do not delete"
     :default false]
-   
+   [nil "--start-date START-DATE" 
+    (str "default: " (:START_DATE defaults))
+    :default (:START_DATE defaults)
+    :parse-fn identity]
+   [nil "--end-date END-DATE" 
+    (str "default: " (:END_DATE defaults))
+    :default (:END_DATE defaults)
+    :parse-fn identity]
    ["-h" "--help"]
    ["-l" "--leihs-http-url LEIHS_HTTP_URL"
     (str "default: " (:LEIHS_HTTP_URL defaults))
     :default (env-or-default :LEIHS_HTTP_URL)
     :parse-fn identity]
    ])
-
-(let [end-date (java-time/minus (java-time/adjust (java-time/local-date) :first-day-of-month) (java-time/years 1)) ]
-  )
-      
-      
-(java-time/adjust java-time/local-date :first-day-of-month
 
 (defn run [options]
   (try 
@@ -75,7 +77,7 @@
       :else (run options)
       )))
 
-;(-main "-k" "-d")
+;(-main "-h")
 
 
 ;#### debug ###################################################################

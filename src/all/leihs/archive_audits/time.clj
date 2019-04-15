@@ -5,13 +5,14 @@
     [java-time :refer :all]
     ))
 
+(def default-start-date (-> (local-date) (minus  (years 1)) (adjust :first-day-of-month) format))
+(def default-end-date (-> (local-date) (minus  (years 1)) (adjust :first-day-of-month) format))
+
 (defn months-seq 
   ([]
-   (months-seq (-> (local-date) (minus  (years 1)) format)))
+   (months-seq default-start-date))
   ([start-date]
-   (months-seq start-date (-> (local-date)
-                              (minus  (years 1))
-                              format)))
+   (months-seq start-date default-end-date))
   ([start-date end-date]
    (let [start-date (-> start-date local-date (adjust :first-day-of-month))
          end-date (-> end-date local-date (adjust :first-day-of-month))]

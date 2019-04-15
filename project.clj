@@ -24,7 +24,7 @@
 
   :javac-options ["-target" "1.8" "-source" "1.8"  "-Xlint:-options"]
 
-  :main leihs.archive-audits
+  :main leihs.archive-audits.main
 
   :resource-paths ["resources/all"]
 
