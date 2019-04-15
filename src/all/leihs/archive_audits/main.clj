@@ -4,6 +4,7 @@
     [leihs.archive-audits.time :as time]
     [leihs.utils.core :refer [presence str keyword]]
 
+    [clj-http.client :as http-client]
     [clojure.tools.cli :as cli :refer [parse-opts]]
     [clojure.pprint :refer [pprint]]
 
@@ -37,6 +38,9 @@
     (str "default: " (:END_DATE defaults))
     :default (:END_DATE defaults)
     :parse-fn identity]
+   [nil "--leihs-token LEIHS_TOKEN"
+    :default (env-or-default :LEIHS_TOKEN)
+    :parse-fn identity]
    ["-h" "--help"]
    ["-l" "--leihs-http-url LEIHS_HTTP_URL"
     (str "default: " (:LEIHS_HTTP_URL defaults))
@@ -47,10 +51,20 @@
 (defn run [options]
   (try 
     (println "running")
+    (doseq [month-date (time/months-seq (:start-date options) (:end-date options))]
+      (println month-date)
+      (let [resp (http-client/get
+                   (str (:leihs-http-url options) 
+                        "/admin/system/database/audits/before/" month-date)
+                   {:accept :json
+                    :as :json
+                    :basic-auth [(:leihs-token options) ""]})]
+        (when (-> resp :body :legacy-audits seq)
+          (println (str month-date " there are " (-> resp :body :legacy-audits count " audits to be saved"))))))
     (catch Throwable t
       (logging/error t)
-      (System/exit -1))))
-
+      ;(System/exit -1)
+      )))
 
 (defn main-usage [options-summary & more]
   (->> ["Leihs Archive-Audits"
@@ -78,6 +92,8 @@
       )))
 
 ;(-main "-h")
+; local test token: 
+;(-main "--leihs-token" "GTS4VVOK3R3KFK3WKUIYF56GAHDQCTRW" "--start-date" "2015-05-01" "--end-date" "2015-06-01" )
 
 
 ;#### debug ###################################################################
