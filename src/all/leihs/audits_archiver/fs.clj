@@ -35,9 +35,11 @@
     (when (exists? file-path)
       (throw (ex-info "The file-path already exists!"
                       {:file-path file-path})))
-    (logging/info "writing to " file-path)
-    (when-not dry-run
-      (spit (.toString file-path) data))))
+    (logging/info "writing " (str file-path))
+    (if-not dry-run
+      (spit (.toString file-path) data)
+      (logging/info "skipping actual write because of dry-run")
+      )))
 
 ;(write-lines (path "foo.txt")
 

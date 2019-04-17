@@ -27,7 +27,7 @@
    :START_DATE time/default-start-date
    :END_DATE time/default-end-date
    :TARGET_DIR fs/default-target-dir
-   :FILE_NAME_PREFIX "audits-before-"
+   :FILE_NAME_PREFIX "audits-before_"
    :PRTG_URL nil})
 
 (defn env-or-default [kw & {:keys [parse-fn]
@@ -62,22 +62,27 @@
     :default (env-or-default :TARGET_DIR)
     :parse-fn identity]])
 
-(defn run [options]
+(defn run [{dry-run :dry-run :as options}]
   (try 
-    (println "running")
     (doseq [month-date (time/months-seq (:start-date options) (:end-date options))]
-      (println month-date)
-      (let [resp (http-client/get
-                   (str (:leihs-http-url options) 
-                        "/admin/system/database/audits/before/" month-date)
-                   {:accept :json
-                    :basic-auth [(:leihs-token options) ""]})]
-        (def ^:dynamic resp* resp)
-        (fs/save (:body resp) month-date options)))
+      (let [url (str (:leihs-http-url options) 
+                     "/admin/system/database/audits/before/" month-date)]
+        (logging/info "fetching " url)
+        (let [ resp (http-client/get url 
+                                     {:accept :json
+                                      :basic-auth [(:leihs-token options) ""]})]
+          (def ^:dynamic resp* resp)
+          (fs/save (:body resp) month-date options)
+          (if-not dry-run
+            (do 
+              (logging/info "deleting " url)
+              (http-client/delete url 
+                                  {:accept :json
+                                   :basic-auth [(:leihs-token options) ""]}))
+            (logging/info "skipping delete because of dry-run")))))
     (catch Throwable t
       (logging/error t)
-      ;(System/exit -1)
-      )))
+      (System/exit -1))))
 
 (defn main-usage [options-summary & more]
   (->> ["Leihs Archive-Audits"
