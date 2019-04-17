@@ -1,25 +1,33 @@
-(ns leihs.archive-audits.main
+(ns leihs.audits-archiver.main
   (:refer-clojure :exclude [str keyword])
   (:require
-    [leihs.archive-audits.time :as time]
+    [leihs.audits-archiver.time :as time]
+    [leihs.audits-archiver.fs :as fs]
     [leihs.utils.core :refer [presence str keyword]]
 
     [clj-http.client :as http-client]
     [clojure.tools.cli :as cli :refer [parse-opts]]
     [clojure.pprint :refer [pprint]]
 
+
     [clojure.tools.logging :as logging]
     [logbug.catcher :as catcher]
     [logbug.debug :as debug :refer [I>]]
     [logbug.thrown :as thrown]
     )
+  
   (:gen-class)
   )
 
+(thrown/reset-ns-filter-regex #".*leihs.*")
+
+
 (def defaults
-  {:LEIHS_HTTP_URL "http://localhost:3200"
+  {:LEIHS_HTTP_URL "http://localhost"
    :START_DATE time/default-start-date
    :END_DATE time/default-end-date
+   :TARGET_DIR fs/default-target-dir
+   :FILE_NAME_PREFIX "audits-before-"
    :PRTG_URL nil})
 
 (defn env-or-default [kw & {:keys [parse-fn]
@@ -41,12 +49,18 @@
    [nil "--leihs-token LEIHS_TOKEN"
     :default (env-or-default :LEIHS_TOKEN)
     :parse-fn identity]
+   [nil "--file-name-prefix FILE_NAME_PREFIX"
+    :default (env-or-default :FILE_NAME_PREFIX)
+    :parse-fn identity]
    ["-h" "--help"]
    ["-l" "--leihs-http-url LEIHS_HTTP_URL"
     (str "default: " (:LEIHS_HTTP_URL defaults))
     :default (env-or-default :LEIHS_HTTP_URL)
     :parse-fn identity]
-   ])
+   ["-t" "--target-dir TARGET-DIR"
+    (str "default: " (:TARGET_DIR defaults))
+    :default (env-or-default :TARGET_DIR)
+    :parse-fn identity]])
 
 (defn run [options]
   (try 
@@ -57,10 +71,9 @@
                    (str (:leihs-http-url options) 
                         "/admin/system/database/audits/before/" month-date)
                    {:accept :json
-                    :as :json
                     :basic-auth [(:leihs-token options) ""]})]
-        (when (-> resp :body :legacy-audits seq)
-          (println (str month-date " there are " (-> resp :body :legacy-audits count " audits to be saved"))))))
+        (def ^:dynamic resp* resp)
+        (fs/save (:body resp) month-date options)))
     (catch Throwable t
       (logging/error t)
       ;(System/exit -1)

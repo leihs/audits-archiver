@@ -5,9 +5,11 @@
 .hgignore
 /.lein-*
 /.nrepl-port
+/audits-archive
 /checkouts
 /classes
 /log
 /target
+/tmp
 pom.xml
 pom.xml.asc

@@ -1,4 +1,4 @@
-(ns leihs.archive-audits.time
+(ns leihs.audits-archiver.time
   (:refer-clojure :exclude [str keyword contains? iterate range min format zero? max])
   (:require
     [leihs.utils.core :refer [presence str keyword]]
