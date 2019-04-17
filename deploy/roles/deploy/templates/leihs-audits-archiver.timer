@@ -1,0 +1,12 @@
+[Unit]
+Description=Leihs Audits Sync Timer
+
+[Timer]
+# run on the first Thursday every month:
+# OnCalendar=Thu *-*-1..7 02:00:00
+OnCalendar=Thu *-*-12..19 02:00:00
+RandomizedDelaySec=3600
+Persistent=true
+
+[Install]
+WantedBy=timers.target

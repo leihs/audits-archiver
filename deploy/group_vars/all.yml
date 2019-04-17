@@ -1,5 +1,8 @@
-leihs_zhdk_sync_root_dir: /leihs/zhdk-sync
-leihs_zhdk_sync_jar_path: '{{leihs_zhdk_sync_root_dir}}/leihs_zhdk-sync.jar'
+leihs_audits_archiver_root_dir: /leihs/audits-archiver
+leihs_audits_archiver_jar_path: '{{leihs_audits_archiver_root_dir}}/leihs_audits-archiver.jar'
 
-leihs_zhdk_sync_user: leihs-zhdk-sync
-leihs_zhdk_sync_group: leihs-zhdk-sync
+leihs_audits_archiver_user: leihs-audits-archiver
+leihs_audits_archiver_group: leihs-audits-archiver
+
+leihs_archive_dir: /leihs/archive
+leihs_audits_archive_dir: /leihs/archive/audits

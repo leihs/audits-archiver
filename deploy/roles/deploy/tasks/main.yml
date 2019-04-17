@@ -9,15 +9,15 @@
 
 - name: create leihs-admin user
   user:
-    name: '{{leihs_zhdk_sync_user}}'
+    name: '{{leihs_audits_archiver_user}}'
     system: yes
 
 - name: create deploy target dir(s)
   file:
-    path: "{{leihs_zhdk_sync_root_dir}}{{item}}"
+    path: "{{leihs_audits_archiver_root_dir}}{{item}}"
     state: directory
     recurse: yes
-    owner: '{{leihs_zhdk_sync_user}}'
+    owner: '{{leihs_audits_archiver_user}}'
     group: root
     mode: 0750
   with_items:
@@ -26,9 +26,9 @@
 
 - name: copy jar 
   copy:
-    src: '{{playbook_dir}}/../leihs_zhdk-sync.jar'
-    dest: '{{leihs_zhdk_sync_jar_path}}'
-    owner: '{{leihs_zhdk_sync_user}}'
+    src: '{{playbook_dir}}/../leihs_audits-archiver.jar'
+    dest: '{{leihs_audits_archiver_jar_path}}'
+    owner: '{{leihs_audits_archiver_user}}'
     group: root
 
 - name: fix a debian java9 certificate issue
@@ -36,18 +36,39 @@
     /usr/bin/printf '\xfe\xed\xfe\xed\x00\x00\x00\x02\x00\x00\x00\x00\xe2\x68\x6e\x45\xfb\x43\xdf\xa4\xd9\x92\xdd\x41\xce\xb6\xb2\x1c\x63\x30\xd7\x92' > /etc/ssl/certs/java/cacerts
     /var/lib/dpkg/info/ca-certificates-java.postinst configure
 
+# archive
+
+- name: create archive folder
+  file:
+    path: "{{leihs_archive_dir}}"
+    state: directory
+    recurse: yes
+    owner: root
+    group: root
+    mode: 0770
+
+
+- name: create archive folder
+  file:
+    path: "{{leihs_archive_dir}}"
+    state: directory
+    recurse: yes
+    owner: "{{leihs_audits_archiver_user}}"
+    group: root
+    mode: 0770
+
 
 # service
 
 - name: setup service file
   template: 
-    src: leihs-zhdk-sync.service 
-    dest: /etc/systemd/system/leihs-zhdk-sync.service
+    src: leihs-audits-archiver.service 
+    dest: /etc/systemd/system/leihs-audits-archiver.service
     mode: 0640
 
 - name: enabled the service
   service:
-    name: leihs-zhdk-sync.service 
+    name: leihs-audits-archiver.service 
     enabled: yes
 
 - command: systemctl daemon-reload
@@ -60,8 +81,8 @@
  
 - name: install the sync timer
   template:
-    src: leihs-zhdk-sync.timer
-    dest: /etc/systemd/system/leihs-zhdk-sync.timer
+    src: leihs-audits-archiver.timer
+    dest: /etc/systemd/system/leihs-audits-archiver.timer
     mode: 0644
 
 - name: reload systemctl
@@ -70,16 +91,16 @@
 
 - name: enable the sync timer
   service:
-    name: leihs-zhdk-sync.timer
+    name: leihs-audits-archiver.timer
     enabled: yes
     state: started
 
 
 # service
 
-- name: start leihs-zhdk-sync.service
+- name: start leihs-audits-archiver.service
   service:
-    name: leihs-zhdk-sync.service
+    name: leihs-audits-archiver.service
     state: started
     enabled: yes
 

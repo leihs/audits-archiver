@@ -38,11 +38,11 @@
 (def cli-options
   [["-d" "--dry-run" "Do download but do not delete"
     :default false]
-   [nil "--start-date START-DATE" 
+   [nil "--start-date START_DATE" 
     (str "default: " (:START_DATE defaults))
     :default (:START_DATE defaults)
     :parse-fn identity]
-   [nil "--end-date END-DATE" 
+   [nil "--end-date END_DATE" 
     (str "default: " (:END_DATE defaults))
     :default (:END_DATE defaults)
     :parse-fn identity]
@@ -57,7 +57,7 @@
     (str "default: " (:LEIHS_HTTP_URL defaults))
     :default (env-or-default :LEIHS_HTTP_URL)
     :parse-fn identity]
-   ["-t" "--target-dir TARGET-DIR"
+   ["-t" "--target-dir TARGET_DIR"
     (str "default: " (:TARGET_DIR defaults))
     :default (env-or-default :TARGET_DIR)
     :parse-fn identity]])
