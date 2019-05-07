@@ -40,11 +40,11 @@
     :default false]
    [nil "--start-date START_DATE" 
     (str "default: " (:START_DATE defaults))
-    :default (:START_DATE defaults)
+    :default (env-or-default :START_DATE)
     :parse-fn identity]
    [nil "--end-date END_DATE" 
     (str "default: " (:END_DATE defaults))
-    :default (:END_DATE defaults)
+    :default (env-or-default :END_DATE)
     :parse-fn identity]
    [nil "--leihs-token LEIHS_TOKEN"
     :default (env-or-default :LEIHS_TOKEN)

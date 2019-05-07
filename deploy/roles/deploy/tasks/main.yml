@@ -7,7 +7,7 @@
     cd $PROJECT_DIR
     $PROJECT_DIR/bin/lein do clean, uberjar
 
-- name: create leihs-admin user
+- name: create user
   user:
     name: '{{leihs_audits_archiver_user}}'
     system: yes
@@ -96,11 +96,17 @@
     state: started
 
 
-# service
+
+
+- name: enable the service
+  service:
+    name: leihs-audits-archiver.service
+    enabled: yes
 
 - name: start leihs-audits-archiver.service
   service:
     name: leihs-audits-archiver.service
     state: started
     enabled: yes
+  when: run_service_on_deploy
 

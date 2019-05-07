@@ -6,3 +6,5 @@ leihs_audits_archiver_group: leihs-audits-archiver
 
 leihs_archive_dir: /leihs/archive
 leihs_audits_archive_dir: /leihs/archive/audits
+
+run_service_on_deploy: false

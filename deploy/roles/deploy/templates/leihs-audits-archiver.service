@@ -9,11 +9,13 @@ BindsTo=leihs-admin.service
 Type=oneshot
 RemainAfterExit=false
 WorkingDirectory={{leihs_audits_archiver_root_dir}}
-User={{leihs-audits-archiver}}
+User={{leihs_audits_archiver_user}}
 Environment=LEIHS_HTTP_URL=http://localhost
 Environment=LEIHS_TOKEN={{leihs_api_token}}
 Environment=TARGET_DIR={{leihs_audits_archive_dir}}
-Environment=START_DATE=2015-06-01
+{% if start_date is defined %}
+Environment=START_DATE={{start_date}}
+{% endif %}
 ExecStart=/usr/bin/java "-Xmx1014m" "-jar" "{{leihs_audits_archiver_jar_path}}"
 
 [Install]
