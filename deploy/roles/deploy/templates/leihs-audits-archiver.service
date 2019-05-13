@@ -16,7 +16,7 @@ Environment=TARGET_DIR={{leihs_audits_archive_dir}}
 {% if start_date is defined %}
 Environment=START_DATE={{start_date}}
 {% endif %}
-ExecStart=/usr/bin/java "-Xmx1014m" "-jar" "{{leihs_audits_archiver_jar_path}}"
+ExecStart=/usr/bin/java "-Xmx2000m" "-jar" "{{leihs_audits_archiver_jar_path}}"
 
 [Install]
 WantedBy=multi-user.target
